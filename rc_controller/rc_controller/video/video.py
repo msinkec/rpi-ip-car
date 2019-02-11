@@ -36,6 +36,7 @@ def play_feed(video_port):
     """
     
     # Using a simpler method with netcat and raspivid for a low latency stream
-    nc = subprocess.Popen(('nc', '-l', '-p', str(video_port)), stdout=subprocess.PIPE)
-    subprocess.Popen(('mplayer', '-fps', '60', '-cache', '1024', '-'), stdin=nc.stdout)
+    netcat = subprocess.Popen(('nc', '-l', '-p', str(video_port)), stdout=subprocess.PIPE)
+    mplayer = subprocess.Popen(('mplayer', '-fps', '60', '-cache', '1024', '-'), stdin=nc.stdout)
 
+    return [netcat, mplayer]

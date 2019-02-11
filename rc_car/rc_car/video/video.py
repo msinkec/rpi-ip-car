@@ -36,7 +36,9 @@ def initialize_feed(remote_addr, video_port):
     """
 
     # Using a simpler method with raspivid and netcat for a low latency stream
-    raspivid = subprocess.Popen(('raspivid', '-w', '640', '-h', '480', '-o', '-', '-t', '0'), 
+    raspivid = subprocess.Popen(('raspivid', '-w', '640', '-h', '480', '--nopreview', '-o', '-', '-t', '0'), 
                                     stdout=subprocess.PIPE)
-    subprocess.Popen(('nc', remote_addr, str(video_port)), stdin=raspivid.stdout)
+    netcat = subprocess.Popen(('nc', remote_addr, str(video_port)), stdin=raspivid.stdout)
+
+    return [raspivid, netcat]
 

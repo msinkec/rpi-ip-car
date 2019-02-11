@@ -1,11 +1,30 @@
+import signal
+import sys
 import optparse
 import video
-from threading import Thread
+import time
+
+
+# List of subprocesses
+subprocesses = []
+
+
+def signal_handler(signal, frame):
+    finish();
+
+
+def finish():
+    # TODO: Clean up subprocesses
+    for subprocess in subprocesses:
+        subprocess.kill()
+    sys.exit(0);
 
 
 def main():
+    global subprocesses
+
     # TODO: Parse command input.
-    parser = optparse.OptionParser(usage='Usage: %prog -a <car address> ' +  
+    parser = optparse.OptionParser(usage='Usage: %prog -a <controller address> ' +  
                                     '--videoport <video port> --controlport <controls port>')
 
     parser.add_option('-a', dest='remote_addr', type='string')
@@ -21,13 +40,20 @@ def main():
     video_port = options.video_port
     controls_port = options.controls_port
 
-    # TODO: Execute initial authentication
+    # Set up handler for SIGINT signals
+    signal.signal(signal.SIGINT, signal_handler)
 
-    # TODO: Start video streaming thread.
-    video_thread = Thread(target = video.initialize_feed, args = (remote_addr, video_port))
-    video_thread.start()
+    # TODO: Execute initial authentication. (Wait for controller to try to connect to this car and then store the IP.)
 
-    # TODO: Start control listening thread.
+    # TODO: Start video streaming. 
+    subprocesses += video.initialize_feed(remote_addr, video_port)
+
+    # TODO: Start listening for controls.
+    print("Running...")
+    while True: time.sleep(1)
+
+    finish()
+
 
 if __name__ == '__main__':
     main()
