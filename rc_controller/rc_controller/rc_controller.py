@@ -15,14 +15,14 @@ def main():
     video_port = options.video_port
     controls_port = options.controls_port
 
-    # TODO: Wait for client to make connection
+    # TODO: Wait for car to get online
     
 
     # TODO: Start to display video feed in a seperate thread
     video_thread = Thread(target = video.play_feed, args = (video_port, ))
     video_thread.start()
 
-    # TODO: Capture control keys and send them off to the client
+    # TODO: Open up a QT window for car controlling
 
 
 if __name__ == '__main__':

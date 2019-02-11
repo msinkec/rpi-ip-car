@@ -1,11 +1,11 @@
 from setuptools import setup
 
 setup(
-    name='rc-server',
+    name='rc-controller',
     author='Mihael Šinkec',
-    url='https://github.com/Shink0',
+    url='https://github.com/msinkec/rpi-ip-car',
     license='MIT',
-    py_modules=['rc_server'],
+    py_modules=['rc_controller'],
     install_requires=[
         
     ]

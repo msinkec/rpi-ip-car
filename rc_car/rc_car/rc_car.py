@@ -5,7 +5,7 @@ from threading import Thread
 
 def main():
     # TODO: Parse command input.
-    parser = optparse.OptionParser(usage='Usage: %prog -a <server address> ' +  
+    parser = optparse.OptionParser(usage='Usage: %prog -a <car address> ' +  
                                     '--videoport <video port> --controlport <controls port>')
 
     parser.add_option('-a', dest='remote_addr', type='string')

@@ -1,13 +1,12 @@
 from setuptools import setup
 
 setup(
-    name='rc-client',
+    name='rc-car',
     author='Mihael Šinkec',
-    url='https://github.com/Shink0',
+    url='https://github.com/msinkec/rpi-ip-car',
     license='MIT',
-    py_modules=['rc_client'],
+    py_modules=['rc_car'],
     install_requires=[
-        'opencv-python'
     ]
 )
 
