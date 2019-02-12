@@ -1,3 +1,4 @@
+import socket
 import optparse
 import video
 import signal
@@ -26,11 +27,13 @@ class Main:
                                     'Optional:\n --videoport <video port> --controlport <controls port>')
         parser.add_option('-a', dest='car_addr', type='string')
         parser.add_option('-p', dest='car_pass', type='string')
+        #parser.add_option('--videoport', dest='video_port', type='int', default=16168)
+        #parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
         parser.add_option('--videoport', dest='video_port', type='int', default=16168)
-        parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
-
+        parser.add_option('--controlport', dest='controls_port', type='int', default=5000)
+        
         (options, args) = parser.parse_args()
-        if options.car_ip is None:
+        if options.car_addr is None:
             print(parser.usage)
             exit(1)
         
@@ -40,28 +43,29 @@ class Main:
         controls_port = options.controls_port
 
         # Set up handler for SIGINT signals
-        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
         # Establish connection.
-        host = '127.0.0.1'
+        #host = '127.0.0.1'
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((host, controls_port))
+        self.sock.bind(('', controls_port))
 
         # Send LOGON request along with entered password to the car.
-        sock.sendto('LOGON ' + car_pass, car_addr)
+        msg = 'LOGON ' + car_pass
+        self.sock.sendto(msg.encode(), (car_addr, controls_port))
 
         # Wait for approval.
-        sock.settimeout(10)
-        msg, addr = s.recvfrom(1024)
+        self.sock.settimeout(10)
+        print("Waiting for car to respond...")
+        msg, addr = self.sock.recvfrom(1024)
         if msg == 'CONNECTED':
-            sock.settimeout(None)
+            self.sock.settimeout(None)
             # Start to display video feed
             self.subprocesses += video.play_feed(video_port)
             # TODO: Listen for controls
             while True:
                 comm = input("> ")
-                sock.sendto(comm, car_addr)
-
+                self.sock.sendto(comm, (car_addr, controls_port))
 
         self.finish()
 
