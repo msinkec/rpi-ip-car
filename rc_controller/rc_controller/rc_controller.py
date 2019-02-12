@@ -1,24 +1,31 @@
 import optparse
 import video
-from threading import Thread
+import signal
+import sys
+import time
 
 # List of subprocesses
 subprocesses = []
+
 
 def signal_handler(signal, frame):
     finish();
 
 
 def finish():
-    # TODO: Clean up subprocesses
+    # Clean up subprocesses
     for subprocess in subprocesses:
         subprocess.kill()
     sys.exit(0)
 
 
 def main():
+    global subprocesses
+
     # TODO: Parse command input
-    parser = optparse.OptionParser(usage='Usage %prog -a <car IP> --videoport <video port> --controlport <controls port>')
+    parser = optparse.OptionParser(usage='''Usage %prog -a <car IP> 
+                            Options:
+                            --videoport <video port> --controlport <controls port>''')
 
     parser.add_option('-a', dest='car_ip', type='string')
     parser.add_option('--videoport', dest='video_port', type='int', default=16168)
@@ -41,10 +48,11 @@ def main():
 
     # TODO: Start to display video feed
     subprocesses += video.play_feed(video_port)
-
+ 
     # TODO: Open up a QT window for car controlling
-    print "test"
 
+    while True: time.sleep(1)
+    finish()
 
 if __name__ == '__main__':
     main()

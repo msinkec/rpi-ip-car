@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 def play_feed(video_port):
     """
@@ -35,8 +36,11 @@ def play_feed(video_port):
         server_socket.close()
     """
     
-    # Using a simpler method with netcat and raspivid for a low latency stream
+    # mplayer is currently used to play back the video feed.
+    # TODO: Implement way to play back the stream in the QT app itself.
     netcat = subprocess.Popen(('nc', '-l', '-p', str(video_port)), stdout=subprocess.PIPE)
-    mplayer = subprocess.Popen(('mplayer', '-fps', '60', '-cache', '1024', '-'), stdin=nc.stdout)
-
+    with open(os.devnull, 'wb') as devnull:
+        mplayer = subprocess.Popen(('mplayer', '-noconsolecontrols' , '-fps', '60',
+                  '-cache', '1024', '-'), stdin=netcat.stdout, stdout=devnull)
+    
     return [netcat, mplayer]
