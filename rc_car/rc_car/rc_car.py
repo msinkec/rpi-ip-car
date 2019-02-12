@@ -17,11 +17,11 @@ class Main:
         self.sock.close()
         sys.exit(0);
 
-    def authenticate(password):
+    def authenticate(self, password):
         # Currently only password SHA-512 hash of the car is checked.
         # TODO: Save hash in some configuration file. (The hardcoded one is of the string "default")
-        pass_hash = hashlib.sha512(password).hexdigest()
-        if pass_hash == 'c46f6204075636e89e9241c32ec6e03d04884d08d5aa52abaf3b0bb8eb74d60a24145c7fd9f97f5fd0300a602e575a9a689b95cd68ce3eccc8b6a4aea1975db8':
+        pass_hash = hashlib.sha512(password.encode()).hexdigest()
+        if pass_hash == hashlib.sha512('default'.encode()).hexdigest(): 
             return True
         return False
 
@@ -54,21 +54,23 @@ class Main:
 
         # Execute initial authentication.
         # TODO: Communication is in CLEARTEXT. Change to TLS or something.
-        host = '127.0.0.1'
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((host, controls_port))
+        self.sock.bind(('', controls_port))
         print('Waiting for controller...')
         
         while True:
             msg, addr = self.sock.recvfrom(1024)
+            msg = msg.decode()
+
+            print("Got msg: " + msg)
             
-            if msg.startswith('LOGON') and authenticate(msg.split()[1]):
+            if msg.startswith('LOGON') and self.authenticate(msg.split()[1]):
                 # If authentication was successfull, switch to new controller.
                 self.clear_session()     # Clear stuff from previous session
-                self.controller_addr = addr
+                self.controller_addr = addr[0]
                 self.subprocesses += video.initialize_feed(self.controller_addr, video_port)
                 # Send an approval response to the controller
-                self.sock.sendto(controller_addr, 'CONNECTED')
+                self.sock.sendto('CONNECTED'.encode(), (self.controller_addr, controls_port))
                 print("Controller connected!: " + self.controller_addr)
             
             if addr==self.controller_addr:

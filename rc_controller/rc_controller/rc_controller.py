@@ -27,10 +27,8 @@ class Main:
                                     'Optional:\n --videoport <video port> --controlport <controls port>')
         parser.add_option('-a', dest='car_addr', type='string')
         parser.add_option('-p', dest='car_pass', type='string')
-        #parser.add_option('--videoport', dest='video_port', type='int', default=16168)
-        #parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
         parser.add_option('--videoport', dest='video_port', type='int', default=16168)
-        parser.add_option('--controlport', dest='controls_port', type='int', default=5000)
+        parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
         
         (options, args) = parser.parse_args()
         if options.car_addr is None:
