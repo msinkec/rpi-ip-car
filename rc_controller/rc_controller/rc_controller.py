@@ -4,6 +4,7 @@ import video
 import signal
 import sys
 import time
+import gui
 
 
 class Main:
@@ -12,6 +13,7 @@ class Main:
         self.finish();
 
     def finish(self):
+        print("Closing application...")
         self.sock.close()
         # Clean up subprocesses
         for subprocess in self.subprocesses:
@@ -56,14 +58,14 @@ class Main:
         self.sock.settimeout(10)
         print("Waiting for car to respond...")
         msg, addr = self.sock.recvfrom(1024)
-        if msg == 'CONNECTED':
+        if msg.decode() == 'CONNECTED':
+            print("Connection SUCCESS!")
             self.sock.settimeout(None)
             # Start to display video feed
             self.subprocesses += video.play_feed(video_port)
-            # TODO: Listen for controls
-            while True:
-                comm = input("> ")
-                self.sock.sendto(comm, (car_addr, controls_port))
+            # Open QT window for controlling the car.
+            gui.run(self.sock)
+    
 
         self.finish()
 

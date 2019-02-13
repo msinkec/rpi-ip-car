@@ -39,7 +39,7 @@ def play_feed(video_port):
     # mplayer is currently used to play back the video feed.
     # TODO: Implement way to play back the stream in the QT app itself.
     netcat = subprocess.Popen(('nc', '-l', '-p', str(video_port)), stdout=subprocess.PIPE)
-    mplayer = subprocess.Popen(('mplayer', '-noconsolecontrols' , '-fps', '60',
+    mplayer = subprocess.Popen(('mplayer', '-noconsolecontrols', '-nolirc' , '-fps', '60',
                   '-cache', '1024', '-'), stdin=netcat.stdout)
     
     return [netcat, mplayer]
