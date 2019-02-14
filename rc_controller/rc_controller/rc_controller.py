@@ -64,7 +64,7 @@ class Main:
             # Start to display video feed
             self.subprocesses += video.play_feed(video_port)
             # Open QT window for controlling the car.
-            gui.run(self.sock)
+            gui.MainWindow(self.sock, car_addr, controls_port)
     
 
         self.finish()

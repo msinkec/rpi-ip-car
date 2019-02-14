@@ -1,1 +1,1 @@
-from .main_logic import run
+from .main_logic import MainWindow
