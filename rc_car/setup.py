@@ -8,6 +8,7 @@ setup(
     license='MIT',
     py_modules=['rc_car'],
     install_requires=[
+        gpiozero
     ]
 )
 

@@ -6,6 +6,7 @@ import video
 import controls
 import time
 import hashlib
+import controls
 
 class Main:
 
@@ -52,19 +53,31 @@ class Main:
         # Set up handler for SIGINT signals.
         signal.signal(signal.SIGINT, self.signal_handler)
 
+        # Object for executing movement commands.
+        car_movement_controls = controls.Movement()
+
         # Execute initial authentication.
         # TODO: Communication is in CLEARTEXT. Change to TLS or something.
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', controls_port))
         print('Waiting for controller...')
         
+        self.sock.settimeout(0.1)
         while True:
-            msg, addr = self.sock.recvfrom(1024)
-            msg = msg.decode()
-
-            print("Got msg: " + msg)
             
-            if msg.startswith('LOGON') and self.authenticate(msg.split()[1]):
+            try:
+                msg, addr = self.sock.recvfrom(64)
+            except socket.timeout:
+                # If no packet is received, we still need to update movement
+                # to stop moving.
+                # This method with the socket timeout is kind of hacky, but it
+                # doesn't use sepperate threads and I'm too lazy to do sepperate threads.
+                car_movement_controls.update()
+                continue
+
+            comm = msg.decode()
+ 
+            if comm.startswith('LOGON') and self.authenticate(comm.split()[1]):
                 # If authentication was successfull, switch to new controller.
                 self.clear_session()     # Clear stuff from previous session
                 self.controller_addr = addr[0]
@@ -72,17 +85,19 @@ class Main:
                 # Send an approval response to the controller
                 self.sock.sendto('CONNECTED'.encode(), (self.controller_addr, controls_port))
                 print("Controller connected!: " + self.controller_addr)
+                continue
             
-            if addr==self.controller_addr:
+
+            # Check if this packet actually came from the logged on controller.
+            if addr[0]==self.controller_addr:
                 # Check for special commands.
-                if msg == 'LOGOFF':
+                if comm == 'LOGOFF':
                     self.clear_session()
-                elif msg == 'SHUTDOWN':
+                elif comm == 'SHUTDOWN':
                     pass
                 else:
-                    # If msg is none of the above, then it's a control command.
-                    # If it's malformed, it gets discarded.
-                    controls.execute(msg)
+                    # If comm is none of the above, then it's a movement command.
+                    car_movement_controls.execute(comm)
 
 
 if __name__ == '__main__':
