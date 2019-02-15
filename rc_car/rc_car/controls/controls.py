@@ -5,7 +5,7 @@ from gpiozero import LED, PWMLED
 class Movement():
 
     def __init__(self):
-        self.MAX_DELTA_T = 0.1  # Amout of time the command is executed.
+        self.MAX_DELTA_T = 0.15  # Amout of time the command is executed.
 
         self.forward_last_t = 0
         self.backwards_last_t = 0
@@ -30,7 +30,7 @@ class Movement():
             self.left_last_t = time.time()
         elif comm == 'r':
             self.right_last_t = time.time()
-        elif comm == 'b':
+        elif comm == 's':
             self.boost_last_t = time.time()
         self.update()
 
@@ -40,7 +40,7 @@ class Movement():
         if ((cur_t - self.boost_last_t) <= self.MAX_DELTA):
             pwm_val = 1
         else:
-            pwm_val = 0.2
+            pwm_val = 0.3
 
         # Forward / Backwards movement
         if ((cur_t - self.forward_last_t) <= self.MAX_DELTA_T):
