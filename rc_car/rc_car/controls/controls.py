@@ -37,7 +37,7 @@ class Movement():
     def update(self):
         cur_t = time.time()
 
-        if ((cur_t - self.boost_last_t) <= self.MAX_DELTA):
+        if ((cur_t - self.boost_last_t) <= self.MAX_DELTA_T):
             pwm_val = 1
         else:
             pwm_val = 0.3
@@ -48,7 +48,7 @@ class Movement():
             self.front_motorB.value = 0 
             self.back_motorA.value = pwm_val
             self.back_motorB.value = 0
-        elif ((cur_t - self.backward_last_t) <= self.MAX_DELTA_T):
+        elif ((cur_t - self.backwards_last_t) <= self.MAX_DELTA_T):
             self.front_motorA.value = 0
             self.front_motorB.value = pwm_val 
             self.back_motorA.value = 0
