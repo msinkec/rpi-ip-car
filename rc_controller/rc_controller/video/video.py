@@ -1,6 +1,7 @@
 import subprocess
 import os
 
+
 def play_feed(video_port):
     """
     # Start a socket listening for connections on 0.0.0.0:<video port> (0.0.0.0 means
@@ -41,5 +42,6 @@ def play_feed(video_port):
     netcat = subprocess.Popen(('nc', '-l', '-p', str(video_port)), stdout=subprocess.PIPE)
     mplayer = subprocess.Popen(('mplayer', '-noconsolecontrols', '-nolirc' , '-fps', '60',
                   '-cache', '1024', '-'), stdin=netcat.stdout)
-    
+   
     return [netcat, mplayer]
+

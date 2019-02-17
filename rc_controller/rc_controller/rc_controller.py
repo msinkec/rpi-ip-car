@@ -9,15 +9,16 @@ import gui
 
 class Main:
     
-    def signal_handler(self, signal, frame):
-        self.finish();
-
     def finish(self):
         print("Closing application...")
+    
+        # Close controls socket
         self.sock.close()
+
         # Clean up subprocesses
         for subprocess in self.subprocesses:
             subprocess.kill()
+
         sys.exit(0)
 
     def __init__(self):
@@ -42,9 +43,6 @@ class Main:
         video_port = options.video_port
         controls_port = options.controls_port
 
-        # Set up handler for SIGINT signals
-        signal.signal(signal.SIGINT, self.signal_handler)
-
         # Establish connection.
         #host = '127.0.0.1'
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -66,7 +64,6 @@ class Main:
             # Open QT window for controlling the car.
             gui.MainWindow(self.sock, car_addr, controls_port)
     
-
         self.finish()
 
 
