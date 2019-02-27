@@ -59,8 +59,10 @@ class Main:
         if msg.decode() == 'CONNECTED':
             print("Connection SUCCESS!")
             self.sock.settimeout(None)
-            # Start to display video feed
+            # Start to listen for video feed
             self.subprocesses += video.play_feed(video_port)
+            # Send confirmation, that the controller is now listening for video connection.
+            self.sock.sendto("VIDEO OK".encode(), (car_addr, controls_port))
             # Open QT window for controlling the car.
             gui.MainWindow(self.sock, car_addr, controls_port)
     
