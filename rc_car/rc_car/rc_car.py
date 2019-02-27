@@ -81,10 +81,14 @@ class Main:
                 # If authentication was successfull, switch to new controller.
                 self.clear_session()     # Clear stuff from previous session
                 self.controller_addr = addr[0]
-                self.subprocesses += video.initialize_feed(self.controller_addr, video_port)
                 # Send an approval response to the controller
                 self.sock.sendto('CONNECTED'.encode(), (self.controller_addr, controls_port))
                 print("Controller connected!: " + self.controller_addr)
+                # Controller must have socket listening for video before we can start streaming.
+                msg, addr = self.sock.recvfrom(64)
+                if msg.decode() == 'VIDEO OK':
+                    print('Controller is listening for video, starting stream.')
+                    self.subprocesses += video.initialize_feed(self.controller_addr, video_port)
                 continue
             
 
