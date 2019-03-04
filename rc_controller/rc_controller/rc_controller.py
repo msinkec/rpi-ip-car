@@ -15,6 +15,10 @@ class Main:
         # Close controls socket
         self.sock.close()
 
+        # Close video stream
+        if self.video_player:
+            self.video_player.finish()
+
         # Clean up subprocesses
         for subprocess in self.subprocesses:
             subprocess.kill()
@@ -60,7 +64,8 @@ class Main:
             print("Connection SUCCESS!")
             self.sock.settimeout(None)
             # Start to listen for video feed
-            self.subprocesses += video.play_feed(video_port)
+            self.video_player = video.VideoPlayer(video_port)
+            self.video_player.start()
             # Send confirmation, that the controller is now listening for video connection.
             self.sock.sendto("VIDEO OK".encode(), (car_addr, controls_port))
             # Open QT window for controlling the car.

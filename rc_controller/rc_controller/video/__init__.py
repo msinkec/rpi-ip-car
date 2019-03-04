@@ -1,1 +1,1 @@
-from .video import play_feed
+from .video import VideoPlayer
