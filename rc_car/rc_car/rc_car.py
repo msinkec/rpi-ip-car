@@ -26,8 +26,11 @@ class Main:
             return True
         return False
 
-    def clear_session(self): 
+    def clear_session(self):
         self.controller_addr = None
+        # Stop video streaming thread.
+        if self.video_stream:
+            self.video_stream.finish()
         # Clean up subprocesses.
         for subprocess in self.subprocesses:
             subprocess.kill()
@@ -38,6 +41,8 @@ class Main:
         
         # The IP-address of the controller
         self.controller_addr = None
+
+        self.video_stream = None
 
         # Parse command input.
         parser = optparse.OptionParser(usage='OPTIONS:\n' +  
@@ -88,7 +93,8 @@ class Main:
                 msg, addr = self.sock.recvfrom(64)
                 if msg.decode() == 'VIDEO OK':
                     print('Controller is listening for video, starting stream.')
-                    self.subprocesses += video.initialize_feed(self.controller_addr, video_port)
+                    self.video_stream = video.VideoStreamer(self.controller_addr, video_port)
+                    self.video_stream.start()
                 continue
             
 

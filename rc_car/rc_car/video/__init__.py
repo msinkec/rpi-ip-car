@@ -1,2 +1,2 @@
-from .video import initialize_feed
+from .video import VideoStreamer
 
