@@ -8,6 +8,8 @@ import struct
 import io
 from PIL import Image
 
+from video.detection import BallDetector
+
 class VideoPlayer:
 
     def __init__(self, video_port):
@@ -21,6 +23,7 @@ class VideoPlayer:
         #              '-cache', '1024', '-'), stdin=netcat.stdout)
 
         self.finish_stream = False  # This is a flag to get the video thread stop itself
+        self.ball_detector = BallDetector()
 
         thr = threading.Thread(target = self.initialize_playback)
         thr.start()
@@ -57,7 +60,7 @@ class VideoPlayer:
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 imagedisp = cv2.imdecode(data, 1)
 
-                cv2.imshow("Frame",imagedisp)
+                cv2.imshow("Frame",self.ball_detector.process_frame(imagedisp))
         finally:
             connection.close()
             server_socket.close()
