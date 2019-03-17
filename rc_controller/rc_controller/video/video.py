@@ -6,14 +6,15 @@ import threading
 import socket
 import struct
 import io
-from PIL import Image
 
 from video.detection import BallDetector
 
+
 class VideoPlayer:
 
-    def __init__(self, video_port):
+    def __init__(self, video_port, detection):
         self.video_port = video_port
+        self.detection = detection
     
     def start(self): 
         # mplayer is currently used to play back the video feed.
@@ -55,12 +56,14 @@ class VideoPlayer:
                 # Rewind the stream, open it as an image with opencv and do some
                 # processing on it
                 image_stream.seek(0)
-                image = Image.open(image_stream)
 
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 imagedisp = cv2.imdecode(data, 1)
 
-                cv2.imshow("Frame",self.ball_detector.process_frame(imagedisp))
+                if self.detection:
+                    imagedisp = self.ball_detector.process_frame(imagedisp)
+
+                cv2.imshow("Frame", imagedisp)
         finally:
             connection.close()
             server_socket.close()

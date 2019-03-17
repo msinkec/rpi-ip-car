@@ -36,7 +36,9 @@ class Main:
         parser.add_option('-p', dest='car_pass', type='string')
         parser.add_option('--videoport', dest='video_port', type='int', default=16168)
         parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
-        
+        parser.add_option('--detection', action='store_true', dest='detection', 
+                            default=False, help="Enable object detection.")
+
         (options, args) = parser.parse_args()
         if options.car_addr is None:
             print(parser.usage)
@@ -46,6 +48,7 @@ class Main:
         car_pass = options.car_pass
         video_port = options.video_port
         controls_port = options.controls_port
+        detection = options.detection
 
         # Establish connection.
         #host = '127.0.0.1'
@@ -64,7 +67,7 @@ class Main:
             print("Connection SUCCESS!")
             self.sock.settimeout(None)
             # Start to listen for video feed
-            self.video_player = video.VideoPlayer(video_port)
+            self.video_player = video.VideoPlayer(video_port, detection)
             self.video_player.start()
             # Send confirmation, that the controller is now listening for video connection.
             self.sock.sendto("VIDEO OK".encode(), (car_addr, controls_port))
