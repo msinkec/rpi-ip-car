@@ -6,6 +6,9 @@ import cv2
 import imutils
 import time
 
+import controls
+import config
+
 class BallDetector:
 
     def __init__(self):
@@ -85,8 +88,19 @@ class BallDetector:
         x_center = self.frame_dimens[0] / 2;
         x_delta = ball_location[0] - x_center
 
-        if x_delta < -100 && radius < 200:
-            # TODO: steer right and move forward
-        elif x_delta > 100 && radius < 200:
-            # TODO. steer left and move forward
+        commands = set()
+
+        if x_delta < -100 and radius < 200:
+            # Steer right and move forward
+            commands.add('r')
+            commands.add('f')
+            print('going right lel')
+        elif x_delta > 100 and radius < 200:
+            # Steer left and move forward
+            commands.add('l')
+            commands.add('f')
+            print('going left ZOMG')
+        
+        controls.execute(commands, config.controls_sock, config.car_addr, config.controls_port)
+        
         

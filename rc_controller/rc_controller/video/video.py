@@ -7,14 +7,15 @@ import socket
 import struct
 import io
 
+import config
 from video.detection import BallDetector
 
 
 class VideoPlayer:
 
-    def __init__(self, video_port, detection):
-        self.video_port = video_port
-        self.detection = detection
+    def __init__(self, detection):
+        self.video_port = config.video_port
+        self.detection_switch = detection
     
     def start(self): 
         # mplayer is currently used to play back the video feed.
@@ -24,7 +25,9 @@ class VideoPlayer:
         #              '-cache', '1024', '-'), stdin=netcat.stdout)
 
         self.finish_stream = False  # This is a flag to get the video thread stop itself
-        self.ball_detector = BallDetector()
+
+        if self.detection_switch == True:
+            self.ball_detector = BallDetector()
 
         thr = threading.Thread(target = self.initialize_playback)
         thr.start()
@@ -33,12 +36,12 @@ class VideoPlayer:
         self.finish_stream = True
      
     def initialize_playback(self):
-        server_socket = socket.socket()
-        server_socket.bind(('0.0.0.0', self.video_port))
-        server_socket.listen(0)
+        video_socket = socket.socket()
+        video_socket.bind(('0.0.0.0', self.video_port))
+        video_socket.listen(0)
 
         # Accept a single connection and make a file-like object out of it
-        connection = server_socket.accept()[0].makefile('rb')
+        connection = video_socket.accept()[0].makefile('rb')
         try:
             while True:
                 if self.finish_stream:
@@ -60,10 +63,10 @@ class VideoPlayer:
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 imagedisp = cv2.imdecode(data, 1)
 
-                if self.detection:
+                if self.detection_switch:
                     imagedisp = self.ball_detector.process_frame(imagedisp)
 
                 cv2.imshow("Frame", imagedisp)
         finally:
             connection.close()
-            server_socket.close()
+            video_socket.close()

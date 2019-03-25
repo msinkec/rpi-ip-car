@@ -6,6 +6,8 @@ import sys
 import time
 import gui
 
+import config
+
 
 class Main:
     
@@ -44,20 +46,26 @@ class Main:
             print(parser.usage)
             exit(1)
         
-        car_addr = options.car_addr
-        car_pass = options.car_pass
-        video_port = options.video_port
-        controls_port = options.controls_port
+        # Store options to a global static class
+        config.car_addr = options.car_addr
+        config.car_pass = options.car_pass
+        config.video_port = options.video_port
+        config.controls_port = options.controls_port
+
         detection = options.detection
 
         # Establish connection.
         #host = '127.0.0.1'
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('', controls_port))
+        self.sock.bind(('', config.controls_port))
 
         # Send LOGON request along with entered password to the car.
-        msg = 'LOGON ' + car_pass
-        self.sock.sendto(msg.encode(), (car_addr, controls_port))
+        msg = 'LOGON ' + config.car_pass
+        self.sock.sendto(msg.encode(), (config.car_addr, config.controls_port))
+
+        # Store pointer to the control socket in a static global variable, so it can easily be
+        # used elsewhere.
+        config.controls_sock = self.sock
 
         # Wait for approval.
         self.sock.settimeout(10)
@@ -67,12 +75,12 @@ class Main:
             print("Connection SUCCESS!")
             self.sock.settimeout(None)
             # Start to listen for video feed
-            self.video_player = video.VideoPlayer(video_port, detection)
+            self.video_player = video.VideoPlayer(detection)
             self.video_player.start()
             # Send confirmation, that the controller is now listening for video connection.
-            self.sock.sendto("VIDEO OK".encode(), (car_addr, controls_port))
+            self.sock.sendto("VIDEO OK".encode(), (config.car_addr, config.controls_port))
             # Open QT window for controlling the car.
-            gui.MainWindow(self.sock, car_addr, controls_port)
+            gui.MainWindow()
     
         self.finish()
 

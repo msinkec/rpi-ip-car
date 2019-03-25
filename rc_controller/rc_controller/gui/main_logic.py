@@ -4,20 +4,17 @@ import time
 from threading import Thread
 from .main_gui import Ui_MainWindow
 import controls
+import config
 
 
 # TODO: This should be a child of the ui class.
 class MainWindow():
     
-    def __init__(self, sock, car_addr, controls_port):
+    def __init__(self):
         app = QtWidgets.QApplication(sys.argv)
         self.main_window = QtWidgets.QMainWindow()
         ui = Ui_MainWindow()
         ui.setupUi(self.main_window)
-
-        self.sock = sock
-        self.car_addr = car_addr
-        self.controls_port = controls_port
 
         # Set of currently pressed keys
         self.pressed_keys = set()
@@ -101,6 +98,6 @@ class MainWindow():
                     commands.add('l')   # Steer left 
                 elif key == QtCore.Qt.Key_Shift:
                     commands.add('s')   # Speed mode
-            controls.execute(commands, self.sock, self.car_addr, self.controls_port)
+            controls.execute(commands, config.controls_sock, config.car_addr, config.controls_port)
         
 
