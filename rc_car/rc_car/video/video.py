@@ -15,16 +15,21 @@ class VideoStreamer:
         self.remote_addr = remote_addr
         self.video_port = video_port
 
-    def start(self):
+    def start(self, netcat_stream):
 
-        # Using a simpler method with raspivid and netcat for a low latency stream
-        #raspivid = subprocess.Popen(('raspivid', '-w', '640', '-h', '480', '--nopreview', '-o', '-', '-t', '0'), 
-        #                               stdout=subprocess.PIPE)
-        #netcat = subprocess.Popen(('nc', remote_addr, str(video_port)), stdin=raspivid.stdout)
+        if netcat_stream == True:
+            # Using a simpler method with raspivid and netcat for a low latency stream
+            raspivid = subprocess.Popen(('raspivid', '-w', '640', '-h', '480',
+                '--nopreview', '-o', '-', '-t', '0'), 
+                                           stdout=subprocess.PIPE)
+            netcat = subprocess.Popen(('nc', self.remote_addr, str(self.video_port)), 
+                    stdin=raspivid.stdout)
 
-        self.finish_session = False
-        thr = threading.Thread(target = self.initialize_stream)
-        thr.start()
+        else:
+            # Default streaming method
+            self.finish_session = False
+            thr = threading.Thread(target = self.initialize_stream)
+            thr.start()
 
     def finish(self):
         self.finish_session = True
