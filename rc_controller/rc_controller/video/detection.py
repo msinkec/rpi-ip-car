@@ -92,7 +92,7 @@ class BallDetector:
 
         if radius < 400:
             commands.add('f')
-            if x_delta < -200
+            if x_delta < -200:
                 # Steer right and move forward
                 commands.add('r')
                 print('going right lel')

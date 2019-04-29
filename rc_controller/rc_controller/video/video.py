@@ -16,24 +16,32 @@ class VideoPlayer:
     def __init__(self, detection):
         self.video_port = config.video_port
         self.detection_switch = detection
+
+        self.subprocesses = []
     
-    def start(self): 
-        # mplayer is currently used to play back the video feed.
-        # TODO: Implement way to play back the stream in the QT app itself.
-        #netcat = sp.Popen(('nc', '-l', '-p', str(video_port)), stdout=sp.PIPE)
-        #mplayer = sp.Popen(('mplayer', '-noconsolecontrols', '-nolirc' , '-fps', '60',
-        #              '-cache', '1024', '-'), stdin=netcat.stdout)
+    def start(self):
 
-        self.finish_stream = False  # This is a flag to get the video thread stop itself
+        if config.netcat_stream == True:
+            netcat = sp.Popen(('nc', '-l', '-p', str(self.video_port)), stdout=sp.PIPE)
+            mplayer = sp.Popen(('mplayer', '-noconsolecontrols', '-nolirc' , '-fps', '60',
+                          '-cache', '1024', '-'), stdin=netcat.stdout)
+            self.subprocesses.append(netcat)
+            self.subprocesses.append(mplayer)
+        else:
+            self.finish_stream = False  # This is a flag to get the video thread stop itself
 
-        if self.detection_switch == True:
-            self.ball_detector = BallDetector()
+            if self.detection_switch == True:
+                self.ball_detector = BallDetector()
 
-        thr = threading.Thread(target = self.initialize_playback)
-        thr.start()
+            thr = threading.Thread(target = self.initialize_playback)
+            thr.start()
 
     def finish(self):
         self.finish_stream = True
+    
+        # Clean up subprocesses, if there are any.
+        for subprocess in self.subprocesses:
+            subprocess.kill()
      
     def initialize_playback(self):
         video_socket = socket.socket()
