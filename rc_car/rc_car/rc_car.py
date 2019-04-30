@@ -31,14 +31,8 @@ class Main:
         # Stop video streaming thread.
         if self.video_stream:
             self.video_stream.finish()
-        # Clean up subprocesses.
-        for subprocess in self.subprocesses:
-            subprocess.kill()
 
     def __init__(self):
-        # List of subprocesses
-        self.subprocesses = []
-        
         # The IP-address of the controller
         self.controller_addr = None
 
@@ -71,8 +65,8 @@ class Main:
         print('Waiting for controller...')
         
         self.sock.settimeout(0.1)
-        while True:
-            
+
+        while True: 
             try:
                 msg, addr = self.sock.recvfrom(64)
             except socket.timeout:

@@ -14,6 +14,7 @@ class VideoStreamer:
     def __init__(self, remote_addr, video_port):
         self.remote_addr = remote_addr
         self.video_port = video_port
+        self.subprocesses = []
 
     def start(self, netcat_stream):
 
@@ -24,6 +25,8 @@ class VideoStreamer:
                                            stdout=subprocess.PIPE)
             netcat = subprocess.Popen(('nc', self.remote_addr, str(self.video_port)), 
                     stdin=raspivid.stdout)
+            self.subprocesses.append(raspivid)
+            self.subprocesses.append(netcat)
 
         else:
             # Default streaming method
@@ -33,7 +36,9 @@ class VideoStreamer:
 
     def finish(self):
         self.finish_session = True
-        pass
+
+        for subprocess in self.subprocesses:
+            subprocess.kill();
 
     def initialize_stream(self):
         # Connect a client socket to my_server:8000 (change my_server to the
