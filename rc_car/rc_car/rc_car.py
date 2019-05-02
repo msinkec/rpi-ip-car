@@ -43,14 +43,11 @@ class Main:
                                         '--videoport <video port> --controlport <controls port>')
         parser.add_option('--videoport', dest='video_port', type='int', default=16168)
         parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
-        parser.add_option('--netcat', dest='netcat_stream', action='store_true',
-                default=False, help='Use netcat method to stream video. Client must also enable this option.')
 
         (options, args) = parser.parse_args()
         
         video_port = options.video_port
         controls_port = options.controls_port
-        netcat_stream = options.netcat_stream
 
         # Set up handler for SIGINT signals.
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -91,7 +88,7 @@ class Main:
                 if msg.decode() == 'VIDEO OK':
                     print('Controller is listening for video, starting stream.')
                     self.video_stream = video.VideoStreamer(self.controller_addr, video_port)
-                    self.video_stream.start(netcat_stream)
+                    self.video_stream.start()
                 continue
             
 
