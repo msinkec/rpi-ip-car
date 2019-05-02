@@ -33,8 +33,6 @@ class Main:
         parser.add_option('--controlport', dest='controls_port', type='int', default=16169)
         parser.add_option('--detection', action='store_true', dest='detection', 
                             default=False, help="Enable object detection.")
-        parser.add_option('--netcat', action='store_true', dest='netcat_stream', 
-                            default=False, help="Use netcat as video streaming method. Must also be enabled by server (car)")
 
         (options, args) = parser.parse_args()
         if options.car_addr is None:
@@ -46,8 +44,6 @@ class Main:
         config.car_pass = options.car_pass
         config.video_port = options.video_port
         config.controls_port = options.controls_port
-        config.netcat_stream = options.netcat_stream
-
         detection = options.detection
 
         # Establish connection.

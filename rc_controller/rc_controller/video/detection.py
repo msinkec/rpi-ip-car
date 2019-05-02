@@ -90,16 +90,19 @@ class BallDetector:
 
         commands = set()
 
-        if radius < 400:
+        if radius < 400 && radius > 50:
             commands.add('f')
             if x_delta < -200:
                 # Steer right and move forward
                 commands.add('r')
-                print('going right lel')
+                print('going right')
             if x_delta > 200:
                 # Steer left and move forward
                 commands.add('l')
-                print('going left ZOMG')
+                print('going left')
+        elif radius > 400:
+            # Move a bit backwards
+            commands.add('b')
         
         controls.execute(commands, config.controls_sock, config.car_addr, config.controls_port)
         
