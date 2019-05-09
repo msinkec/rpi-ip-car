@@ -27,6 +27,10 @@ class MainWindow():
         self.btn_backward = self.main_window.findChild(QtWidgets.QPushButton, "btn_backward")
         self.btn_left = self.main_window.findChild(QtWidgets.QPushButton, "btn_left")
         self.btn_right = self.main_window.findChild(QtWidgets.QPushButton, "btn_right")
+        self.slider_fs = self.main_window.findChild(QtWidgets.QSlider, \
+                             "horizontalSlider_fs")
+        self.slider_bs = self.main_window.findChild(QtWidgets.QSlider, \
+                             "horizontalSlider_bs")
 
         # Handle keys for car control to the main window.
         # We attach the method to the gui object to avoid changing
@@ -86,11 +90,9 @@ class MainWindow():
 
             if len(self.pressed_keys) == 0:
                 continue
-        
-            f_speed = (self.horizontalSlider_fs.value - self.horizontalSlider_fs.minimum /\
-                 (self.horizontalSlider_fs.minimum - self.horizontalSlider_fs.maximum)
-            b_speed = (self.horizontalSlider_bs.value - self.horizontalSlider_bs.minimum /\
-                 (self.horizontalSlider_bs.minimum - self.horizontalSlider_bs.maximum)
+            
+            f_speed = self.slider_fs.value() / 100.0
+            b_speed = self.slider_bs.value() / 100.0
 
             if QtCore.Qt.Key_Shift in self.pressed_keys:
                 f_speed = 1.0
