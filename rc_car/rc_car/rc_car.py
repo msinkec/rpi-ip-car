@@ -93,11 +93,12 @@ class Main:
             
 
             # Check if this packet actually came from the logged on controller.
-            if addr[0]==self.controller_addr:
+            if addr[0] == self.controller_addr:
                 # Check for special commands.
                 if comm == 'LOGOFF':
                     self.clear_session()
                 elif comm == 'SHUTDOWN':
+                    # TODO
                     pass
                 else:
                     # If comm is none of the above, then it's a movement command.

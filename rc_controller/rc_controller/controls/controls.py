@@ -3,11 +3,10 @@
 All commands being sent to the car apply for a fraction of a second.
 After that it has to be re-sent.
 Commands:
-    'f': go forward
-    'b': go backwards
+    'f0.3': go forward at 30% speed
+    'b0.3': go backwards at 30% speed
     'l': steer left
     'r': steer right
-    's': boost / speed mode
 """
 
 def execute(commands, sock, car_addr, controls_port):

@@ -19,8 +19,10 @@ class BallDetector:
         #greenUpper = (64, 255, 255)
         self.pts = deque(maxlen = 64)
          
-        self.colorLower = (24, 48, 46)
-        self.colorUpper = (81, 135, 122)
+        #self.colorLower = (24, 48, 46)
+        #self.colorUpper = (81, 135, 122)
+        self.colorLower = (38,129,0)
+        self.colorUpper = (92,255,210) 
 
     def process_frame(self, frame):
 
@@ -90,7 +92,7 @@ class BallDetector:
 
         commands = set()
 
-        if radius < 400 && radius > 50:
+        if radius < 400 and radius > 50:
             commands.add('f')
             if x_delta < -200:
                 # Steer right and move forward

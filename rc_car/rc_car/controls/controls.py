@@ -11,7 +11,7 @@ class Movement():
         self.backwards_last_t = 0
         self.left_last_t = 0
         self.right_last_t = 0
-        self.boost_last_t = 0
+        self.pwm_val = 0
 
         # Initialize pins
         self.steerL = LED(15)
@@ -22,37 +22,32 @@ class Movement():
         self.back_motorB = PWMLED(14)
 
     def execute(self, comm):
-        if comm == 'f':
+        if comm[0] == 'f':
             self.forward_last_t = time.time()
-        elif comm == 'b':
+            self.pwm_val = float(comm[1:])
+        elif comm[0] == 'b':
             self.backwards_last_t = time.time()
-        elif comm == 'l':
+            self.pwm_val = float(comm[1:])
+        elif comm[0] == 'l':
             self.left_last_t = time.time()
-        elif comm == 'r':
+        elif comm[0] == 'r':
             self.right_last_t = time.time()
-        elif comm == 's':
-            self.boost_last_t = time.time()
         self.update()
 
     def update(self):
         cur_t = time.time()
 
-        if ((cur_t - self.boost_last_t) <= self.MAX_DELTA_T):
-            pwm_val = 1
-        else:
-            pwm_val = 0.3
-
         # Forward / Backwards movement
         if ((cur_t - self.forward_last_t) <= self.MAX_DELTA_T):
-            self.front_motorA.value = pwm_val
+            self.front_motorA.value = self.pwm_val
             self.front_motorB.value = 0 
-            self.back_motorA.value = pwm_val
+            self.back_motorA.value = self.pwm_val
             self.back_motorB.value = 0
         elif ((cur_t - self.backwards_last_t) <= self.MAX_DELTA_T):
             self.front_motorA.value = 0
-            self.front_motorB.value = pwm_val 
+            self.front_motorB.value = self.pwm_val 
             self.back_motorA.value = 0
-            self.back_motorB.value = pwm_val
+            self.back_motorB.value = self.pwm_val
         else:
             self.front_motorA.value = 0
             self.front_motorB.value = 0 

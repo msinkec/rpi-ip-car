@@ -36,7 +36,7 @@ class MainWindow():
         
         # We open a sepperate thread that is checking for pressed keys and
         # then preiodically send UDP packets every n milliseconds.
-        key_handler_thread = Thread(target=self.handle_keys)
+        key_handler_thread = Thread(target=self.handle_keys_thread)
         key_handler_thread.start()
 
         self.main_window.show()
@@ -69,7 +69,7 @@ class MainWindow():
             elif key == QtCore.Qt.Key_Left or key == QtCore.Qt.Key_A:
                 self.btn_left.setEnabled(True)
 
-    def handle_keys(self):
+    def handle_keys_thread(self):
         while True:
 
             # We need some way of knowing when to quit execution of this method.
@@ -86,18 +86,25 @@ class MainWindow():
 
             if len(self.pressed_keys) == 0:
                 continue
+        
+            f_speed = (self.horizontalSlider_fs.value - self.horizontalSlider_fs.minimum /\
+                 (self.horizontalSlider_fs.minimum - self.horizontalSlider_fs.maximum)
+            b_speed = (self.horizontalSlider_bs.value - self.horizontalSlider_bs.minimum /\
+                 (self.horizontalSlider_bs.minimum - self.horizontalSlider_bs.maximum)
+
+            if QtCore.Qt.Key_Shift in self.pressed_keys:
+                f_speed = 1.0
+                b_speed = 1.0
 
             for key in self.pressed_keys:
                 if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
-                    commands.add('f')   # Forward
+                    commands.add('f' + str(f_speed))   # Forward
                 elif key == QtCore.Qt.Key_Down or key == QtCore.Qt.Key_S:
-                    commands.add('b')   # Backwards
+                    commands.add('b' + str(b_speed))   # Backwards
                 elif key == QtCore.Qt.Key_Right or key == QtCore.Qt.Key_D:
                     commands.add('r')   # Steer right 
                 elif key == QtCore.Qt.Key_Left or key == QtCore.Qt.Key_A:
                     commands.add('l')   # Steer left 
-                elif key == QtCore.Qt.Key_Shift:
-                    commands.add('s')   # Speed mode
             controls.execute(commands, config.controls_sock, config.car_addr, config.controls_port)
         
 
