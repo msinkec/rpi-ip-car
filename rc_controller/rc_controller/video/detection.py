@@ -24,6 +24,8 @@ class BallDetector:
         self.colorLower = (38,129,0)
         self.colorUpper = (92,255,210) 
 
+        self.last_movement = 0;
+        
     def process_frame(self, frame):
 
         self.frame_dimens = frame.shape
@@ -87,24 +89,39 @@ class BallDetector:
         return frame
  
     def react(self, ball_location, radius):
-        x_center = self.frame_dimens[0] / 2;
+        # 640x480
+        x_center = self.frame_dimens[1] / 2;
         x_delta = ball_location[0] - x_center
 
         commands = set()
 
-        if radius < 400 and radius > 50:
-            commands.add('f')
-            if x_delta < -200:
-                # Steer right and move forward
-                commands.add('r')
-                print('going right')
-            if x_delta > 200:
-                # Steer left and move forward
+        #print(x_center)
+        #print(x_delta)
+
+        if radius < 60:
+            if x_delta < -150:
+                # Steer right
                 commands.add('l')
-                print('going left')
-        elif radius > 400:
-            # Move a bit backwards
-            commands.add('b')
+                print('left')
+            if x_delta > 150:
+                # Steer left
+                commands.add('r')
+                print('right')
+            if time.time() - self.last_movement > 0.4:
+                # Move forward
+                if not commands:
+                    commands.add('f0.3')
+                else:
+                    # If we are steering, we need more power on acceleration
+                    commands.add('f0.5')
+                self.last_movement = time.time()
+                print('forward')
+        else:
+            if time.time() - self.last_movement > 0.4:
+                # Move backward
+                commands.add('b0.3')
+                self.last_movement = time.time()
+                print('backward')
         
         controls.execute(commands, config.controls_sock, config.car_addr, config.controls_port)
         
